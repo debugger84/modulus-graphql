@@ -18,7 +18,7 @@ import (
 	"github.com/vektah/gqlparser/v2/gqlerror"
 )
 
-const GraphQlPanic application.ActionErrorKey = `GraphQlPanic`
+const GraphQlPanic application.ErrorIdentifier = `GraphQlPanic`
 
 type GraphQlServer struct {
 	config     *ModuleConfig
