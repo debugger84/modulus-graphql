@@ -1,12 +1,13 @@
 module github.com/debugger84/modulus-graphql
 
 go 1.18
-
+require (
+	github.com/debugger84/modulus-application v0.0.5
+)
 require (
 	github.com/99designs/gqlgen v0.17.9 // indirect
 	github.com/agnivade/levenshtein v1.1.1 // indirect
 	github.com/cpuguy83/go-md2man/v2 v2.0.1 // indirect
-	github.com/debugger84/modulus-application v0.0.4 // indirect
 	github.com/go-playground/locales v0.14.0 // indirect
 	github.com/go-playground/universal-translator v0.18.0 // indirect
 	github.com/go-playground/validator/v10 v10.11.0 // indirect

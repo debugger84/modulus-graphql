@@ -100,8 +100,8 @@ func (f *GraphQlServer) initServer(es graphql.ExecutableSchema) {
 	srv.SetErrorPresenter(
 		func(ctx context.Context, e error) *gqlerror.Error {
 			if gqlErr, ok := e.(*gqlerror.Error); ok {
-				if iErr, ok := gqlErr.Unwrap().(ExtendedError); ok {
-					return ConvertToGraphQlError(ctx, iErr)
+				if iErr, ok := gqlErr.Unwrap().(*application.CommonError); ok {
+					return FromCommonErr(ctx, iErr)
 				}
 			}
 
@@ -132,7 +132,9 @@ func (f *GraphQlServer) ApiHandler() http.HandlerFunc {
 }
 
 func (f *GraphQlServer) PlaygroundHandler(title string, endpoint string) http.HandlerFunc {
-	var page = template.Must(template.New("graphql-playground").Parse(`<!DOCTYPE html>
+	var page = template.Must(
+		template.New("graphql-playground").Parse(
+			`<!DOCTYPE html>
 <html>
 <head>
 	<meta charset=utf-8/>
@@ -169,18 +171,22 @@ func (f *GraphQlServer) PlaygroundHandler(title string, endpoint string) http.Ha
 </script>
 </body>
 </html>
-`))
+`,
+		),
+	)
 
 	return func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Add("Content-Type", "text/html")
-		err := page.Execute(w, map[string]string{
-			"title":      title,
-			"endpoint":   endpoint,
-			"version":    "1.7.28",
-			"cssSRI":     "sha256-dKnNLEFwKSVFpkpjRWe+o/jQDM6n/JsvQ0J3l5Dk3fc=",
-			"faviconSRI": "sha256-GhTyE+McTU79R4+pRO6ih+4TfsTOrpPwD8ReKFzb3PM=",
-			"jsSRI":      "sha256-VVwEZwxs4qS5W7E+/9nXINYgr/BJRWKOi/rTMUdmmWg=",
-		})
+		err := page.Execute(
+			w, map[string]string{
+				"title":      title,
+				"endpoint":   endpoint,
+				"version":    "1.7.28",
+				"cssSRI":     "sha256-dKnNLEFwKSVFpkpjRWe+o/jQDM6n/JsvQ0J3l5Dk3fc=",
+				"faviconSRI": "sha256-GhTyE+McTU79R4+pRO6ih+4TfsTOrpPwD8ReKFzb3PM=",
+				"jsSRI":      "sha256-VVwEZwxs4qS5W7E+/9nXINYgr/BJRWKOi/rTMUdmmWg=",
+			},
+		)
 		if err != nil {
 			panic(err)
 		}
